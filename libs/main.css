@@ -1,0 +1,139 @@
+header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tab-content {
+  display: flex;
+  justify-content: center;
+}
+.tab-pane {
+  width: 80vw;
+}
+.table-container {
+  overflow: auto;
+  max-width: 100vw;
+  max-height: 650px;
+}
+.for-fixed {
+  overflow: hidden;
+}
+table td, table th {
+  text-align: center;
+  border-left: 1px solid #dee2e6;
+}
+table td:last-child, table th:last-child {
+  border-right: 1px solid #dee2e6;
+}
+span[action="remove-field"] {
+  color: #E32636;
+}
+span[action="remove-field"]:hover {
+  cursor: pointer;
+}
+h1 {
+  text-align: center;
+  margin: 30px 0;
+}
+footer {
+  margin: 30px auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 80vw;
+}
+.config {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.config-el {
+  margin: 0 15px;
+}
+.config label {
+  font-weight: 600;
+  font-size: 18px;
+}
+#preloader {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, .5);
+}
+#add-day-container {
+  background-color: rgba(0, 0, 0, .5);
+  z-index: 2;
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+  left: 0;
+  top: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.add-day-container_inner {
+  z-index: 3;
+  display: flex;
+  width: 300px;
+  height: 400px;
+  background-color: white;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+}
+.add-day-container_inner__top {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+.add-day-container_inner__top input {
+  width: 80%;
+  margin: 5px 5px;
+}
+.add-day-container_inner__bottom {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-evenly;
+  margin-top: 15px;
+}
+.table-fixed tbody {
+  display: block;
+  overflow-y: overlay;
+  height: 452px;
+  width: 100%;
+}
+.table-fixed tbody td, .table-fixed thead th {
+  width: 13.35vw;
+}
+.table-fixed.even-regularity tbody td, .table-fixed.even-regularity thead th {
+  width: 10vw;
+}
+.table-fixed.balls tbody td, .table-fixed.balls thead th {
+  width: 5.7vw;
+}
+.table-fixed tbody tr {
+  width: 100%;
+  display: block;
+}
+.table-fixed thead tr {
+  width: 100%;
+  display: block;
+}
+.table td, .table thead th {
+  border-color: black!important;
+}
+table {
+  border-bottom: 1px solid black;
+}
