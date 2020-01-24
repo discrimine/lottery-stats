@@ -85,12 +85,35 @@ function calculate_regularity($regularity, $el_count, $reverse_flag = false, $em
  */
 $even_regularity = [];
 $daily_stats = [];
+$daily_stats_per_balls = [
+	'fn' => [
+		'balls' => [],
+		'regularity' => [],
+	],
+	'sn' => [
+		'balls' => [],
+		'regularity' => [],
+	],
+	'tn' => [
+		'balls' => [],
+		'regularity' => [],
+	],
+	'info' => [],
+];
+
 foreach ($lottery_data as $index => $day) {
+	
 	$daily_stats[$index]['number'] = $lottery_data[$index]['number'];
 	$daily_stats[$index]['date'] = $lottery_data[$index]['date'];
+	$daily_stats_per_balls['info'][$index]['number'] = $lottery_data[$index]['number'];
+	$daily_stats_per_balls['info'][$index]['date'] = $lottery_data[$index]['date'];
 	for ($i = 0; $i < 10; $i++) {
 		$tmp_numbers_array = [$day['fn'], $day['sn'], $day['tn']];
 		$daily_stats[$index][] = (in_array($i, $tmp_numbers_array)) ? 1 : 0;
+
+		$daily_stats_per_balls['fn']['balls'][$index][] = $i == $day['fn'] ? 1 : 0;
+		$daily_stats_per_balls['sn']['balls'][$index][] = $i == $day['sn'] ? 1 : 0;
+		$daily_stats_per_balls['tn']['balls'][$index][] = $i == $day['tn'] ? 1 : 0;
 	
 		$even_regularity[$index]['number'] = $day['number'];
 		$even_regularity[$index]['date'] = $day['date'];
@@ -126,6 +149,72 @@ $odd_regularity_intervals = calculate_regularity($even_regularity, 7, true);
 
 // third table, numbers_stats
 $numbers_stats = calculate_regularity($daily_stats, 12);
+
+function render_single_ball_stats_and_regularity($ball) {
+	global $NUMBERS_REGULARITY_HEADERS;
+	global $daily_stats_per_balls;
+	$daily_stats_per_ball = $daily_stats_per_balls[$ball];
+	$daily_stats_per_ball['regularity'] = calculate_regularity($daily_stats_per_balls[$ball]['balls'], 10);
+	?>
+	<h1> Регулярність Кульок </h1>
+	<div class="table-container">
+		<table width="100" class="table table-striped">
+			<thead>
+				<th>кулька</th>
+				<th>всього</th>
+				<?php
+					// count of first element childs
+					for ($i = 0; $i <= count($daily_stats_per_ball['regularity'][0]) - 2; $i++) {
+						echo '<th>'.($i).'</th>';
+					}
+				?>
+			</thead>
+			<tbody>
+				<?php
+				foreach ($daily_stats_per_ball['regularity'] as $number => $number_stat) {
+					echo '<tr>';
+						echo '<td>'.$NUMBERS_REGULARITY_HEADERS[$number].'</td>';
+						foreach ($number_stat as $index => $count) {
+							echo '<td>'.$count.'</td>';
+						}
+					echo '</tr>';
+				}
+				?>
+			</tbody>
+		</table>
+	</div>
+
+	<h1> Кульки </h1>
+	<div class="table-container for-fixed">
+		<table class="table table-fixed balls_single">
+			<thead>
+				<tr>
+					<th>№</th>
+					<th>дата</th>
+					<?php
+						for ($i = 0; $i <= 9; $i++) {
+							echo '<th>'.($i).'</th>';
+						}
+					?>
+				</tr>
+			</thead>
+			<tbody>
+				<?php
+				foreach ($daily_stats_per_ball['balls'] as $index => $day_stats) {
+					echo '<tr>';
+					echo '<td>'.$daily_stats_per_balls['info'][$index]['number'].'</td>';
+					echo '<td>'.$daily_stats_per_balls['info'][$index]['date'].'</td>';
+					foreach ($day_stats as $key => $number) {
+						echo '<td class="'.($number === 1 ? 'bg-danger' : '').'"></td>';
+					}
+					echo '</tr>';
+				}
+				?>
+			</tbody>
+		</table>
+	</div>
+<?php
+}
 ?>
 
 <!DOCTYPE html>
@@ -158,6 +247,16 @@ $numbers_stats = calculate_regularity($daily_stats, 12);
 					</li>
 					<li class="nav-item">
 						<a class="nav-link" id="odd-table-tab" data-toggle="pill" href="#odd-table" role="tab" aria-controls="odd-table" aria-selected="false">Регулярність НЕпарності</a>
+					</li>
+
+					<li class="nav-item">
+						<a class="nav-link" id="numbers-table-1-tab" data-toggle="pill" href="#numbers-table-1" role="tab" aria-controls="numbers-table-1" aria-selected="false">Регулярність 1 кульки</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" id="numbers-table-2-tab" data-toggle="pill" href="#numbers-table-2" role="tab" aria-controls="numbers-table-1" aria-selected="false">Регулярність 2 кульки</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link" id="numbers-table-3-tab" data-toggle="pill" href="#numbers-table-3" role="tab" aria-controls="numbers-table-1" aria-selected="false">Регулярність 3 кульки</a>
 					</li>
 				</ul>
 			</div>
@@ -216,7 +315,18 @@ $numbers_stats = calculate_regularity($daily_stats, 12);
 							?>
 						</tbody>
 					</table>
-				</div>	
+				</div>
+				<footer>
+					<div class="config">
+						<div class="config-el">
+							<button type="button" id="add-day" class="btn btn-primary">Додати день</button>
+						</div>
+						<div class="config-el">
+							<label> Імпорт з csv </label>
+							<input type="file" class="form-control-file" id="import-from-csv">
+						</div>
+					</div>
+				</footer>
 			</div>
 			<!-- second and third table -->
 			<div class="tab-pane fade" id="numbers-table" role="tabpanel" aria-labelledby="numbers-table-tab">
@@ -329,8 +439,9 @@ $numbers_stats = calculate_regularity($daily_stats, 12);
 									foreach ($daily_even_regularity as $key => $number) {
 										if ($key === 'date' | $key === 'number') {
 											echo '<td>'.$number.'</td>';
-										} else if ($key != 6) {
-											echo '<td class="'.($number == '1' ? 'bg-danger' : '').'"></td>';
+										} else {
+											$checking_index = $key === 6 ? '0' : '1';
+											echo '<td class="'.($number == $checking_index ? 'bg-danger' : '').'"></td>';
 										}
 									}
 									echo '</tr>';
@@ -391,8 +502,9 @@ $numbers_stats = calculate_regularity($daily_stats, 12);
 									foreach ($daily_even_regularity as $key => $number) {
 										if ($key === 'date' | $key === 'number') {
 											echo '<td>'.$number.'</td>';
-										} else if ($key != 5) {
-											echo '<td class="'.($number == '0' ? 'bg-danger' : '').'"></td>';
+										} else {
+											$checking_index = $key === 5 ? '1' : '0';
+											echo '<td class="'.($number == $checking_index ? 'bg-danger' : '').'"></td>';
 										}
 									}
 									echo '</tr>';
@@ -402,18 +514,21 @@ $numbers_stats = calculate_regularity($daily_stats, 12);
 					</table>
 				</div>	
 			</div>
-		</div>
-
-		<footer>
-			<div class="config">
-				<div class="config-el">
-					<button type="button" id="add-day" class="btn btn-primary">Додати день</button>
-				</div>
-				<div class="config-el">
-					<label> Імпорт з csv </label>
-					<input type="file" class="form-control-file" id="import-from-csv">
-				</div>
+			
+			<!-- regularity but only first ball -->
+			<div class="tab-pane fade show" id="numbers-table-1" role="tabpanel" aria-labelledby="numbers-table-1-tab">
+				<?php render_single_ball_stats_and_regularity('fn'); ?>
 			</div>
-		</footer>
+
+			<!-- regularity but only second ball -->
+			<div class="tab-pane fade show" id="numbers-table-2" role="tabpanel" aria-labelledby="numbers-table-2-tab">
+				<?php render_single_ball_stats_and_regularity('sn'); ?>
+			</div>
+
+			<!-- regularity but only third ball -->
+			<div class="tab-pane fade show" id="numbers-table-3" role="tabpanel" aria-labelledby="numbers-table-3-tab">
+				<?php render_single_ball_stats_and_regularity('tn'); ?>
+			</div>
+		</div>
 	</body>
 </html>
