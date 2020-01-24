@@ -118,10 +118,13 @@ footer {
   width: 13.35vw;
 }
 .table-fixed.even-regularity tbody td, .table-fixed.even-regularity thead th {
-  width: 10vw;
+  width: 9vw;
 }
 .table-fixed.balls tbody td, .table-fixed.balls thead th {
   width: 5.7vw;
+}
+.table-fixed.balls_single tbody td, .table-fixed.balls_single thead th {
+  width: 6.7vw;
 }
 .table-fixed tbody tr {
   width: 100%;
