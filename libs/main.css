@@ -116,6 +116,8 @@ footer {
 }
 .table-fixed tbody td, .table-fixed thead th {
   width: 13.35vw;
+  font-size: 14px;
+  padding: .45rem;
 }
 .table-fixed.even-regularity tbody td, .table-fixed.even-regularity thead th {
   width: 9vw;
